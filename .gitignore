@@ -1,0 +1,47 @@
+# === Java ===
+*.class
+*.jar
+*.war
+*.ear
+
+# Log files
+*.log
+
+# === JavaFX specific (manual project) ===
+/out/
+/bin/
+/build/
+
+# === OS specific ===
+.DS_Store
+Thumbs.db
+
+# === IntelliJ IDEA ===
+.idea/
+*.iml
+*.iws
+
+# === Eclipse ===
+.project
+.classpath
+.settings/
+
+# === VS Code ===
+.vscode/
+
+# === NetBeans ===
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# === General ===
+*.tmp
+*.swp
+*~
+
+# === Optional ===
+# Ignore generated FXML controller classes if any (only if auto-generated)
+/generated/
