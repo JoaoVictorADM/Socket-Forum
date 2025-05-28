@@ -7,5 +7,6 @@ public interface AuthRepository{
 
 	public abstract void register(User user) throws AuthException;
 	public abstract User login(String user, String password) throws AuthException;
+	public abstract void logout();
 	
 }

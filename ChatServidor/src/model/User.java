@@ -7,6 +7,7 @@ public class User{
 	private String nick;
 	private String password;
 	private boolean isAdministrator;
+	private String token;
 	
 	public User(int id, String user, String nick, String password, boolean isAdministrator){
 		this.id = id;
@@ -15,6 +16,15 @@ public class User{
 		this.password = password;
 		this.isAdministrator = isAdministrator;
 	}
+	
+	public User(String user, String nick, String password, boolean isAdministrator, String token){
+		this.user = user;
+		this.nick = nick;
+		this.password = password;
+		this.isAdministrator = isAdministrator;
+		this.token = token;
+	}
+	
 	
 	public User(String user, String nick, String password, boolean isAdministrator){
 		this.user = user;
@@ -65,6 +75,12 @@ public class User{
 		this.isAdministrator = isAdministrator;
 	}
 	
+	public String getToken(){
+		return this.token;
+	}
 	
+	public void setToken(String token){
+		this.token = token;
+	}
 	
 }

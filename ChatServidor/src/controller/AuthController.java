@@ -30,7 +30,6 @@ public class AuthController{
 			throw new AuthException("002", "Formato de Usuário ou Senha errados;");
 		
 		try{
-			
 			return this.authRepository.login(user, password);
 		} catch(AuthException AE){
 			throw new AuthException(AE);

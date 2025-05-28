@@ -9,8 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
-
 import controller.DBConnectionController;
+import utils.TokenGenerator;
 
 public class AuthMySQLRepository implements AuthRepository{
 
@@ -33,7 +33,6 @@ public class AuthMySQLRepository implements AuthRepository{
         String sql = "INSERT INTO users (user, nick, pass, isAdministrator) VALUES (?, ?, ?, ?)";
 
         try{
-
             PreparedStatement stmt = DBConnectionController.getConnection().prepareStatement(sql);
         	
             stmt.setString(1, user.getUser());
@@ -44,9 +43,9 @@ public class AuthMySQLRepository implements AuthRepository{
             stmt.executeUpdate();
             
             System.out.printf("Cadastro realizado para %s\n", user.getUser());
-        } catch (SQLIntegrityConstraintViolationException e) {
+        } catch(SQLIntegrityConstraintViolationException e) {
             throw new AuthException("012", "Usuário já existe. Tente outro.");
-        } catch (SQLException e) {
+        } catch(SQLException e){
             e.printStackTrace();
             throw new AuthException("500", "Erro ao registrar o usuário.");
         } catch(Exception e){
@@ -60,30 +59,43 @@ public class AuthMySQLRepository implements AuthRepository{
         String sql = "SELECT * FROM users WHERE user = ?";
 
         try{
-        	
         	PreparedStatement stmt = DBConnectionController.getConnection().prepareStatement(sql);
         	
             stmt.setString(1, user);
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (!rs.next())
+            try(ResultSet rs = stmt.executeQuery()){
+                if(!rs.next())
                     throw new AuthException("002", "Usuário não existe.");
 
                 String dbPass = rs.getString("pass");
-                if (!dbPass.equals(password))
+                if(!dbPass.equals(password))
                     throw new AuthException("002", "Senha errada.");
 
                 String nick = rs.getString("nick");
                 boolean isAdmin = rs.getBoolean("isAdministrator");
+
+                
+                String token = TokenGenerator.generateUniqueToken(tokens.keySet());
+  
+                if(token.equals(""))
+                	throw new AuthException("500", "Não foi possível gerar token para o usuário");               
+                
+                User loggedUser = new User(user, nick, password, isAdmin, token);
+                tokens.put(token, loggedUser);
                 
                 System.out.printf("Login realizado para %s\n", user);
-                return new User(user, nick, password, isAdmin);
+                return loggedUser;
             }
 
-        } catch (SQLException e) {
+        } catch(SQLException e){
             e.printStackTrace();
             throw new AuthException("500", "Erro ao realizar login.");
         }
     }
-	
+    
+    @Override
+    public void logout(){
+    	
+    }
+    	
 }
