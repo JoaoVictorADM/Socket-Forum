@@ -21,4 +21,8 @@ public abstract class TokenGenerator{
         
         return "";
     }
+    
+    public static boolean isValidFormatToken(String token){
+        return token != null && token.matches("a\\d{5}");
+    }
 }

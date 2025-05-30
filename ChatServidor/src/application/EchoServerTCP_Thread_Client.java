@@ -36,40 +36,36 @@ public class EchoServerTCP_Thread_Client {
         BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
         String userInput;
 
-        // Envia o JSON com op, user e pass usando GSON
-        System.out.println("Conectado. Enviando dados de login...");
+        System.out.println("Conectado.");
 
-        System.out.print("Usuário: ");
-        String user = stdIn.readLine();
+        while (true) {
+        	 // Envia o JSON com op, user e pass usando GSON
+            
+            System.out.print("Usuário: ");
+            String user = stdIn.readLine();
+            
+            if(user.equals("a"))
+            	break;
+            
+            System.out.print("Nick: ");
+            String nick = stdIn.readLine();
 
-        System.out.print("Senha: ");
-        String pass = stdIn.readLine();
+            System.out.print("Senha: ");
+            String pass = stdIn.readLine();
 
-        // Cria o JSON com Gson
-        JsonObject json = new JsonObject();
-        json.addProperty("op", "000");
-        json.addProperty("user", user);
-        json.addProperty("pass", pass);
+            // Cria o JSON com Gson
+            JsonObject json = new JsonObject();
+            json.addProperty("op", "010");
+            json.addProperty("user", user);
+            json.addProperty("nick", nick);
+            json.addProperty("pass", pass);
 
-        // Envia o JSON como string
-        out.println(json.toString());
+            // Envia o JSON como string
+            out.println(json.toString());
 
-        // Lê resposta do servidor
-        String response = in.readLine();
-        System.out.println("Servidor respondeu: " + response);
-
-        // Loop normal
-        System.out.println("Digite (\"bye\" para sair)");
-        System.out.print("Digite: ");
-        while ((userInput = stdIn.readLine()) != null) {
-            if (userInput.equalsIgnoreCase("bye")) {
-                break;
-            }
-
-            out.println(userInput);
-            String serverResponse = in.readLine();
-            System.out.println("Servidor respondeu: " + serverResponse);
-            System.out.print("Digite: ");
+            // Lê resposta do servidor
+            String response = in.readLine();
+            System.out.println("Servidor respondeu: " + response);
         }
 
         out.close();

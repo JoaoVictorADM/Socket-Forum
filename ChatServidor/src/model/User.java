@@ -17,6 +17,22 @@ public class User{
 		this.isAdministrator = isAdministrator;
 	}
 	
+	public User(int id, String user, String nick, String password, boolean isAdministrator, String token){
+		this.id = id;
+		this.user = user;
+		this.nick = nick;
+		this.password = password;
+		this.isAdministrator = isAdministrator;
+		this.token = token;
+	}
+	
+	public User(int id, String user, String nick, boolean isAdministrator){
+		this.id = id;
+		this.user = user;
+		this.nick = nick;
+		this.isAdministrator = isAdministrator;
+	}
+	
 	public User(String user, String nick, String password, boolean isAdministrator, String token){
 		this.user = user;
 		this.nick = nick;

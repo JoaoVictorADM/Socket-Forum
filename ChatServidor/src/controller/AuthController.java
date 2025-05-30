@@ -3,51 +3,57 @@ package controller;
 import repository.AuthRepository;
 import model.User;
 import exception.AuthException;
-import repository.AuthMySQLRepository;
+import utils.TokenGenerator;
 
-public class AuthController{
+public abstract class  AuthController{
 	
-	private static AuthController instance;
-	private final AuthRepository authRepository;
-	
-	private AuthController(){
-        this.authRepository = AuthMySQLRepository.getInstance();
-    }
-	
-	public static synchronized AuthController getInstance(){ // O synchronized garante que apenas uma thread por vez possa acessar esse método
-        if(instance == null)
-            instance = new AuthController();
-        
-        return instance;
-    }
-	
-	public User login(String user, String password) throws AuthException{
+	public static User login(String user, String password) throws AuthException{
 		
 		if((user == null || password == null))
 			throw new AuthException("002", "Usuário ou Senha nulos");
 		
-		if(!this.isValidText(user, "[a-zA-Z0-9]+", 6, 16) || !this.isValidText(password, "[a-zA-Z0-9]+", 6, 32))
-			throw new AuthException("002", "Formato de Usuário ou Senha errados;");
+		if(!AuthController.isValidText(user, "[a-zA-Z0-9]+", 6, 16) || !AuthController.isValidText(password, "[a-zA-Z0-9]+", 6, 32))
+			throw new AuthException("002", "Formato de Usuário ou Senha errados");
 		
 		try{
-			return this.authRepository.login(user, password);
+			return AuthRepository.login(user, password);
 		} catch(AuthException AE){
 			throw new AuthException(AE);
 		}
     }
 	
-	public User register(User user) throws AuthException{
+	public static void register(User user) throws AuthException{
 
+		if(user.getUser() == null || user.getPassword() == null || user.getNick() == null)
+			throw new AuthException("012", "Usuário, Nick ou Senha nulos");
+		
+		if(!AuthController.isValidText(user.getUser(), "[a-zA-Z0-9]+", 6, 16) || !AuthController.isValidText(user.getNick(), "[a-zA-Z0-9]+", 6, 16) || !AuthController.isValidText(user.getPassword(), "[a-zA-Z0-9]+", 6, 32))
+			throw new AuthException("012", "Formato de Usuário, Nick ou Senha errados");
+		
 		try{
-			this.authRepository.register(new User(user.getUser(), user.getNick(), user.getPassword()));
-			return this.login(user.getUser(), user.getPassword()); 
+			AuthRepository.register(user);
 		} catch(AuthException AE){
 			throw new AuthException(AE);
 		}
 		
     }
 	
-	private boolean isValidText(String text, String regex, int min, int max){
+	public static void logout(String user, String token) throws AuthException{
+	
+		if(user == null || token == null)
+			throw new AuthException("012", "Usuário ou token nulos");
+		
+		if(!AuthController.isValidText(user, "[a-zA-Z0-9]+", 6, 16) || !TokenGenerator.isValidFormatToken(token))
+			throw new AuthException("002", "Formato de Usuário ou Token errados");
+		
+		try{
+			AuthRepository.logout(user, token);
+		} catch(AuthException AE){
+			throw new AuthException(AE);
+		}
+	}
+	
+	private static boolean isValidText(String text, String regex, int min, int max){
 		
 	    if(text.length() < min || text.length() > max) 
 	    	return false;

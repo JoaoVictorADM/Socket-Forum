@@ -21,7 +21,7 @@ public class PortSelector extends Application {
         startButton.setOnAction(e -> {
             try {
                 int port = Integer.parseInt(portField.getText());
-                new Thread(() -> new EchoServerTCP_Thread_Server(port)).start();
+                new EchoServerTCP_Thread_Server(port).start();
 
                 // Abrir GUI de clientes conectados
                 EchoServerTCP_GUI.show();

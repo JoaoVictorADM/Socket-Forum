@@ -1,6 +1,7 @@
 package controller;
 
 import java.net.*;
+import utils.ResponseGenerator;
 import java.io.*;
 import java.util.Collections;
 import java.util.List;
@@ -49,9 +50,12 @@ public class ClientController extends Thread{
     		try{
     			messageFromClient = bufferedReader.readLine();
     			
-                if(messageFromClient != null)
-                    this.processMessage(messageFromClient);
-                
+                if(messageFromClient != null) {
+                	this.processMessage(messageFromClient);
+                } else {
+                    throw new IOException("Socket encerrado pelo cliente.");
+                }
+                     
         	} catch(IOException e){
         		this.closeEverything(this.socket, this.bufferedReader, this.bufferredWriter);
         		break;
@@ -70,9 +74,9 @@ public class ClientController extends Thread{
     }
 
     private static void removeClient(ClientController clientController , String ipPort){
+    	EchoServerTCP_GUI.removeClient(ipPort);
     	ClientController.connectedClients.remove(ipPort);
     	ClientController.clientControllers.remove(clientController);
-        EchoServerTCP_GUI.removeClient(ipPort);
     }
     
     
@@ -95,6 +99,8 @@ public class ClientController extends Thread{
         	response = MessageProcessor.processMessage(op, jsonObject);
         } catch(AuthException AE){
         	System.out.println("Exceção de auth");
+        	this.sendJsonResponseToClient(ResponseGenerator.generateErrorResponse(AE));
+        	return;
         } catch(Exception e){
         	e.printStackTrace();
         }
@@ -103,10 +109,13 @@ public class ClientController extends Thread{
             case "000":
             	this.user = (User)response;
             	System.out.printf("User: %s - Nick: %s - Senha: %s - Administrador: %s - Token: %s", this.user.getUser(), this.user.getNick(), this.user.getPassword(), this.user.isAdministrator(), this.user.getToken());
+            	this.sendJsonResponseToClient(ResponseGenerator.genereLoginSucessResponse(this.user));
                 break;
-            case "sendMessage":
+            case "010":
+            	this.sendJsonResponseToClient(ResponseGenerator.genereRegisterSucessResponse());
                 break;
-            case "logout":
+            case "020":
+            	this.sendJsonResponseToClient(ResponseGenerator.genereLogoutSucessResponse());
                 break;
             default:
                 System.out.println("Operação desconhecida: " + op);
@@ -125,6 +134,8 @@ public class ClientController extends Thread{
     
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter){
     	
+    	System.out.println("Fechando tudo");
+    	
     	ClientController.removeClient(this, this.ipPort);
     	
     	try{
@@ -142,7 +153,20 @@ public class ClientController extends Thread{
     	}
     }
     
-    
+    private void sendJsonResponseToClient(String jsonString) {
+        try{
+            if(this.socket.isConnected() && this.bufferredWriter != null){
+                this.bufferredWriter.write(jsonString);
+                this.bufferredWriter.newLine();
+                this.bufferredWriter.flush(); 
+                System.out.printf("Servidor enviou: %s%n", jsonString);
+            } else{
+                System.out.println("Não foi possível enviar resposta, socket desconectado ou writer nulo.");
+            }
+        } catch (IOException ioe) {
+            System.err.println("Erro ao enviar mensagem para o cliente: " + ioe.getMessage());
+        }
+    }
     
     
 }

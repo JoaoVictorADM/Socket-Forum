@@ -1,22 +1,19 @@
 package exception;
 
-public class AuthException extends Exception{
+public class AuthException extends BaseException{
 
 	private static final long serialVersionUID = 1L;
-	private final String op;
 	
-	public AuthException(String op, String message) {
+	public AuthException(String message){
 		super(message);
-		this.op = op;
 	}
 	
-	public AuthException(AuthException AE) {
-		super(AE.getMessage());
-		this.op = AE.getOp();
+	public AuthException(String op, String message){
+		super(op, message);
 	}
 	
-	public String getOp(){
-        return op;
-    }
+	public AuthException(BaseException e){
+		super(e);
+	}
 	
 }
