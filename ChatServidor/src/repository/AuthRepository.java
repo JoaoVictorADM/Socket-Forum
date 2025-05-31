@@ -15,7 +15,7 @@ import exception.UserException;
 
 public abstract class AuthRepository{
 
-	private static Map<String, User> tokens;
+	public static Map<String, User> tokens;
 	
 	static{
         tokens = new HashMap<>();

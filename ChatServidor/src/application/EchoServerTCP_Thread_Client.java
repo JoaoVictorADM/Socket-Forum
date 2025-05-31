@@ -37,28 +37,35 @@ public class EchoServerTCP_Thread_Client {
         String userInput;
 
         System.out.println("Conectado.");
+        
+        JsonObject json1 = new JsonObject();
+        json1.addProperty("op", "000");
+        json1.addProperty("user", "testevictor");
+        json1.addProperty("pass", "123456");
+        
+        out.println(json1.toString());
 
-        while (true) {
-        	 // Envia o JSON com op, user e pass usando GSON
+        // Lê resposta do servidor
+        String response1 = in.readLine();
+        System.out.println("Servidor respondeu: " + response1);
+        
+
+        while(true){
             
-            System.out.print("Usuário: ");
-            String user = stdIn.readLine();
+            System.out.print("Id pai: ");
+            String id = stdIn.readLine();
             
-            if(user.equals("a"))
+            if(id.equals("a"))
             	break;
             
-            System.out.print("Nick: ");
-            String nick = stdIn.readLine();
-
-            System.out.print("Senha: ");
-            String pass = stdIn.readLine();
-
+            System.out.print("Token: ");
+            String token = stdIn.readLine();
+            
             // Cria o JSON com Gson
             JsonObject json = new JsonObject();
-            json.addProperty("op", "010");
-            json.addProperty("user", user);
-            json.addProperty("nick", nick);
-            json.addProperty("pass", pass);
+            json.addProperty("op", "070");
+            json.addProperty("id", id);
+            json.addProperty("token", token);
 
             // Envia o JSON como string
             out.println(json.toString());

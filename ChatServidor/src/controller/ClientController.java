@@ -10,11 +10,16 @@ import java.util.HashSet;
 import java.util.Set;
 import application.EchoServerTCP_GUI;
 import exception.AuthException;
+import exception.BaseException;
+import exception.UserException;
+import model.ResponseMessage;
+import model.Topic;
 import model.User;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import utils.MessageProcessor;
+import exception.MessageException;
 
 public class ClientController extends Thread{
     private static final Set<String> connectedClients = Collections.synchronizedSet(new HashSet<>());
@@ -80,7 +85,8 @@ public class ClientController extends Thread{
     }
     
     
-    private void processMessage(String json){
+    @SuppressWarnings("unchecked")
+	private void processMessage(String json){
 
     	System.out.printf("Servidor recebeu: %s", json);
     	
@@ -101,22 +107,67 @@ public class ClientController extends Thread{
         	System.out.println("Exceção de auth");
         	this.sendJsonResponseToClient(ResponseGenerator.generateErrorResponse(AE));
         	return;
+        } catch(BaseException e){
+            if(e instanceof AuthException){
+                System.out.println("AuthException");
+            } 
+            
+            if(e instanceof UserException){
+                System.out.println("UserException");
+            } 
+            
+            if(e instanceof MessageException){
+            	System.out.println("MessageException");
+            }
+            
+            this.sendJsonResponseToClient(ResponseGenerator.generateErrorResponse(e));
+            
+            return;
         } catch(Exception e){
-        	e.printStackTrace();
+        	System.out.println("Exceção base Client Controller, Processe message");
+        	
+        	return;
         }
         
         switch(op){
             case "000":
             	this.user = (User)response;
             	System.out.printf("User: %s - Nick: %s - Senha: %s - Administrador: %s - Token: %s", this.user.getUser(), this.user.getNick(), this.user.getPassword(), this.user.isAdministrator(), this.user.getToken());
-            	this.sendJsonResponseToClient(ResponseGenerator.genereLoginSucessResponse(this.user));
+            	this.sendJsonResponseToClient(ResponseGenerator.generateLoginSuccessResponse(this.user));
                 break;
+                
             case "010":
-            	this.sendJsonResponseToClient(ResponseGenerator.genereRegisterSucessResponse());
+            	this.sendJsonResponseToClient(ResponseGenerator.generateRegisterSuccessResponse());
                 break;
+                
             case "020":
-            	this.sendJsonResponseToClient(ResponseGenerator.genereLogoutSucessResponse());
+            	this.sendJsonResponseToClient(ResponseGenerator.generateLogoutSuccessResponse());
                 break;
+                
+            case "030":
+            	this.sendJsonResponseToClient(ResponseGenerator.generateUpdateUserSuccessResponse());
+            	break;
+            	
+            case "040":
+            	this.sendJsonResponseToClient(ResponseGenerator.generateDeleteUserSuccessResponse());
+            	break;
+            	
+            case "050":
+            	this.sendJsonResponseToClient(ResponseGenerator.generateCreateTopicSuccessResponse());
+            	break;
+            	
+            case "060":
+            	this.sendJsonResponseToClient(ResponseGenerator.generateCreateResponseMessageSuccessResponse());
+            	break;
+            	
+            case "070":
+            	this.sendJsonResponseToClient(ResponseGenerator.generateGetResponseMessagesByParentIdSuccesResponse((List<ResponseMessage>)response));
+            	break;
+            	
+            case "075":
+            	this.sendJsonResponseToClient(ResponseGenerator.generateGetAllTopicsSuccesResponse((List<Topic>)response));
+            	break;
+            
             default:
                 System.out.println("Operação desconhecida: " + op);
                 break;

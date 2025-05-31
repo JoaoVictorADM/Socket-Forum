@@ -3,7 +3,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DBConnectionController{
+public abstract class DBConnectionController{
 
 	private static final String url =  "jdbc:mysql://localhost:3306/forumdb";
 	private static final String user = "root";

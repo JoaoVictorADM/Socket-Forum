@@ -4,6 +4,7 @@ import repository.AuthRepository;
 import model.User;
 import exception.AuthException;
 import utils.TokenGenerator;
+import utils.TextValidator;
 
 public abstract class  AuthController{
 	
@@ -12,7 +13,7 @@ public abstract class  AuthController{
 		if((user == null || password == null))
 			throw new AuthException("002", "Usuário ou Senha nulos");
 		
-		if(!AuthController.isValidText(user, "[a-zA-Z0-9]+", 6, 16) || !AuthController.isValidText(password, "[a-zA-Z0-9]+", 6, 32))
+		if(!TextValidator.isValidText(user, "[a-zA-Z0-9]+", 6, 16) || !TextValidator.isValidText(password, "[a-zA-Z0-9]+", 6, 32))
 			throw new AuthException("002", "Formato de Usuário ou Senha errados");
 		
 		try{
@@ -27,7 +28,7 @@ public abstract class  AuthController{
 		if(user.getUser() == null || user.getPassword() == null || user.getNick() == null)
 			throw new AuthException("012", "Usuário, Nick ou Senha nulos");
 		
-		if(!AuthController.isValidText(user.getUser(), "[a-zA-Z0-9]+", 6, 16) || !AuthController.isValidText(user.getNick(), "[a-zA-Z0-9]+", 6, 16) || !AuthController.isValidText(user.getPassword(), "[a-zA-Z0-9]+", 6, 32))
+		if(!TextValidator.isValidText(user.getUser(), "[a-zA-Z0-9]+", 6, 16) || !TextValidator.isValidText(user.getNick(), "[a-zA-Z0-9]+", 6, 16) || !TextValidator.isValidText(user.getPassword(), "[a-zA-Z0-9]+", 6, 32))
 			throw new AuthException("012", "Formato de Usuário, Nick ou Senha errados");
 		
 		try{
@@ -43,7 +44,7 @@ public abstract class  AuthController{
 		if(user == null || token == null)
 			throw new AuthException("012", "Usuário ou token nulos");
 		
-		if(!AuthController.isValidText(user, "[a-zA-Z0-9]+", 6, 16) || !TokenGenerator.isValidFormatToken(token))
+		if(!TextValidator.isValidText(user, "[a-zA-Z0-9]+", 6, 16) || !TokenGenerator.isValidFormatToken(token))
 			throw new AuthException("002", "Formato de Usuário ou Token errados");
 		
 		try{
@@ -51,13 +52,5 @@ public abstract class  AuthController{
 		} catch(AuthException AE){
 			throw new AuthException(AE);
 		}
-	}
-	
-	private static boolean isValidText(String text, String regex, int min, int max){
-		
-	    if(text.length() < min || text.length() > max) 
-	    	return false;
-	    
-	    return text.matches(regex);
 	}
 }
